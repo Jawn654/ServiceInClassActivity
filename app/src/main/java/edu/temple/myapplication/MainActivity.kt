@@ -17,6 +17,10 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var timerBinder: TimerService.TimerBinder
     lateinit var countView: TextView
+
+    lateinit var startButton: MenuItem
+    lateinit var stopButton: MenuItem
+
     var isConnected = false
 
     private val handler = android.os.Handler(Looper.getMainLooper()) { msg ->
@@ -27,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
             timerBinder = service as TimerService.TimerBinder
             isConnected = true
+            timerBinder.setHandler(handler)
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
@@ -59,8 +64,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
 
+
+
+        menuInflater.inflate(R.menu.main, menu)
+        startButton = menu!!.findItem(R.id.startButton)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -68,11 +76,17 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.startButton ->{ if(!timerBinder.isRunning) {
                 timerBinder.start(100)
+                startButton.icon = getDrawable(android.R.drawable.ic_media_pause)
 
             }
-            else timerBinder.pause() }
+            else{
+                timerBinder.pause()
+                startButton.icon = getDrawable(android.R.drawable.ic_media_play)
+
+            } }
 
             R.id.stopButton -> { timerBinder.stop() }
+
 
 
         }
